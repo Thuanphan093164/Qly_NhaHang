@@ -1,0 +1,128 @@
+@model QLy_NhaHang.ViewModels.BookingCreateViewModel
+@{
+    ViewData["Title"] = "Đặt Bàn - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/booking.css" asp-append-version="true" />
+}
+
+<div class="booking-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bold mb-3">Đặt Bàn</h1>
+                    <p class="text-muted lead">Vui lòng điền thông tin để đặt bàn tại nhà hàng của chúng tôi</p>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <form asp-action="Create" method="post" id="bookingForm">
+                            @Html.AntiForgeryToken()
+
+                            <!-- Tên khách hàng -->
+                            <div class="mb-4">
+                                <label asp-for="TenKhach" class="form-label fw-semibold">
+                                    <i class="bi bi-person-fill text-primary me-2"></i>@Html.DisplayNameFor(m => m.TenKhach)
+                                </label>
+                                <input asp-for="TenKhach" class="form-control form-control-lg" 
+                                       placeholder="Nhập tên của bạn" />
+                                <span asp-validation-for="TenKhach" class="text-danger"></span>
+                            </div>
+
+                            <!-- Số điện thoại -->
+                            <div class="mb-4">
+                                <label asp-for="SoDienThoai" class="form-label fw-semibold">
+                                    <i class="bi bi-telephone-fill text-primary me-2"></i>@Html.DisplayNameFor(m => m.SoDienThoai)
+                                </label>
+                                <input asp-for="SoDienThoai" class="form-control form-control-lg" 
+                                       placeholder="0123 456 789" type="tel" />
+                                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                            </div>
+
+                            <!-- Ngày và giờ đặt bàn -->
+                            <div class="mb-4">
+                                <label asp-for="GioDat" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-event-fill text-primary me-2"></i>@Html.DisplayNameFor(m => m.GioDat)
+                                </label>
+                                <input asp-for="GioDat" class="form-control form-control-lg" 
+                                       type="datetime-local" 
+                                       min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="GioDat" class="text-danger"></span>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Vui lòng chọn thời gian sau thời điểm hiện tại
+                                </small>
+                            </div>
+
+                            <!-- Số người -->
+                            <div class="mb-4">
+                                <label asp-for="SoNguoi" class="form-label fw-semibold">
+                                    <i class="bi bi-people-fill text-primary me-2"></i>@Html.DisplayNameFor(m => m.SoNguoi)
+                                </label>
+                                <input asp-for="SoNguoi" class="form-control form-control-lg" 
+                                       type="number" 
+                                       min="1" 
+                                       max="50" 
+                                       placeholder="Số người sẽ đến" />
+                                <span asp-validation-for="SoNguoi" class="text-danger"></span>
+                            </div>
+
+                            <!-- Ghi chú -->
+                            <div class="mb-4">
+                                <label asp-for="GhiChu" class="form-label fw-semibold">
+                                    <i class="bi bi-chat-left-text-fill text-primary me-2"></i>@Html.DisplayNameFor(m => m.GhiChu)
+                                </label>
+                                <textarea asp-for="GhiChu" class="form-control" 
+                                          rows="4" 
+                                          placeholder="Ví dụ: Bàn gần cửa sổ, yêu cầu đặc biệt..."></textarea>
+                                <span asp-validation-for="GhiChu" class="text-danger"></span>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle-fill me-2"></i>Xác Nhận Đặt Bàn
+                                </button>
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Quay Lại Trang Chủ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="alert alert-info mt-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-info-circle-fill me-2"></i>Lưu ý
+                    </h5>
+                    <ul class="mb-0">
+                        <li>Chúng tôi sẽ gọi điện xác nhận đặt bàn trong vòng 30 phút</li>
+                        <li>Vui lòng đến đúng giờ đã đặt</li>
+                        <li>Nếu có thay đổi, vui lòng liên hệ hotline: <strong>0123 456 789</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Set min datetime cho input
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[type="datetime-local"]');
+            if (dateInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                dateInput.min = now.toISOString().slice(0, 16);
+            }
+        });
+    </script>
+}
+

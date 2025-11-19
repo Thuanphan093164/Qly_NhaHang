@@ -1,0 +1,106 @@
+@{
+    ViewData["Title"] = "Đặt Bàn Thành Công - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/booking.css" asp-append-version="true" />
+}
+
+<div class="success-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-xl-6">
+                <div class="success-card">
+                    <!-- Success Icon với Animation -->
+                    <div class="success-icon-wrapper">
+                        <div class="success-icon-circle">
+                            <i class="bi bi-check-circle-fill success-icon"></i>
+                        </div>
+                        <div class="success-ripple"></div>
+                        <div class="success-ripple delay-1"></div>
+                        <div class="success-ripple delay-2"></div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <h1 class="success-title">Đặt Bàn Thành Công!</h1>
+                    
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="success-message-box">
+                            <i class="bi bi-envelope-check-fill me-2"></i>
+                            <span>@TempData["SuccessMessage"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="success-description">
+                            Cảm ơn bạn đã đặt bàn tại nhà hàng của chúng tôi. 
+                            Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận.
+                        </p>
+                    }
+
+                    <!-- Info Cards -->
+                    <div class="info-cards-grid">
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="info-card-content">
+                                <h6 class="info-card-title">Xác nhận nhanh</h6>
+                                <p class="info-card-text">Trong vòng 30 phút</p>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div class="info-card-content">
+                                <h6 class="info-card-title">Giữ máy</h6>
+                                <p class="info-card-text">Trả lời cuộc gọi</p>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-icon">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <div class="info-card-content">
+                                <h6 class="info-card-title">Thay đổi?</h6>
+                                <p class="info-card-text">Gọi: <strong>0123 456 789</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="success-actions">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg success-btn-primary">
+                            <i class="bi bi-house-fill me-2"></i>Về Trang Chủ
+                        </a>
+                        <a asp-controller="Home" asp-action="Menu" class="btn btn-outline-primary btn-lg success-btn-secondary">
+                            <i class="bi bi-menu-button-wide me-2"></i>Xem Thực Đơn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Animation khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            const successCard = document.querySelector('.success-card');
+            if (successCard) {
+                successCard.style.opacity = '0';
+                successCard.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    successCard.style.transition = 'all 0.6s ease-out';
+                    successCard.style.opacity = '1';
+                    successCard.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    </script>
+}
+

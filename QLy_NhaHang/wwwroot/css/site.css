@@ -1,0 +1,159 @@
+/* ============================================
+   Global Styles & Sticky Footer (GRID METHOD)
+   ============================================ */
+
+html, body {
+  height: 100%; /* Bắt buộc phải có */
+  margin: 0;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0;
+  /* Tạo lưới 3 phần: Header - Nội dung (tự giãn) - Footer */
+  display: grid;
+  grid-template-rows: auto 1fr auto; 
+  min-height: 100vh;
+}
+
+/* ============================================
+   Header Styles
+   ============================================ */
+
+header {
+  background-color: #fff;
+  width: 100%;
+  /* Không cần flex-shrink nữa vì Grid lo rồi */
+}
+
+.navbar {
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #0d6efd !important;
+  transition: color 0.3s ease;
+  margin-right: 2rem !important;
+}
+
+.navbar-brand:hover {
+  color: #0a58ca !important;
+}
+
+.navbar-nav {
+  align-items: center;
+}
+
+.nav-link {
+  color: #333 !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.nav-link.active {
+  color: #0d6efd !important;
+  font-weight: 600;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.main-content {
+  width: 100%;
+  padding-bottom: 2rem;
+  /* Grid đã tự xử lý việc giãn dòng (1fr), không cần flex hay height ở đây */
+}
+
+/* ============================================
+   Footer Styles
+   ============================================ */
+
+.footer {
+  width: 100%;
+  position: relative; /* Đảm bảo footer không fixed/absolute */
+  /* Grid tự xếp nó xuống cuối */
+}
+
+.footer h5 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.footer .row > div {
+  min-width: 0; 
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.footer ul li {
+  margin-bottom: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word; /* Thêm để chắc chắn */
+  max-width: 100%;
+  white-space: normal; /* Đảm bảo không bị nowrap */
+}
+
+.footer ul li i {
+  color: #ffc107;
+  flex-shrink: 0; /* Icon không bị shrink */
+}
+
+.footer p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word; /* Thêm để chắc chắn */
+  hyphens: auto;
+  max-width: 100%;
+  line-height: 1.6;
+  white-space: normal; /* Đảm bảo không bị nowrap */
+  overflow: hidden; /* Ẩn phần tràn */
+}
+
+/* ============================================
+   Form & Button Focus
+   ============================================ */
+
+.btn:focus, 
+.btn:active:focus, 
+.btn-link.nav-link:focus, 
+.form-control:focus, 
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 991px) {
+  .main-header .nav-link {
+    padding: 0.75rem 1rem !important;
+    margin: 0.25rem 0;
+  }
+  
+  .main-header .navbar-collapse {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

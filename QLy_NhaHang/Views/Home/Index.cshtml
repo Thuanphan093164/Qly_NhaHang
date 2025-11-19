@@ -1,0 +1,17 @@
+﻿@model QLy_NhaHang.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Trang Chủ - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<!-- Hero Banner -->
+@await Html.PartialAsync("_HeroBanner")
+
+
+@await Html.PartialAsync("_BestSellerSection", Model.BestSellerItems)
+
+<!-- Thông tin liên hệ -->
+@await Html.PartialAsync("_InfoSection")

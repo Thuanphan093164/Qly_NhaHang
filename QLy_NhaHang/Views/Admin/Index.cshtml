@@ -1,0 +1,236 @@
+@{
+    ViewData["Title"] = "Quản Lý - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-5 fw-bold">
+                    <i class="bi bi-speedometer2 text-primary me-2"></i>Bảng Điều Khiển Quản Lý
+                </h1>
+                <button type="button" class="btn btn-outline-primary" onclick="refreshStats()" title="Làm mới thống kê">
+                    <i class="bi bi-arrow-clockwise me-2"></i>Làm Mới
+                </button>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="row g-4 mb-4">
+                <!-- Quản lý Bàn -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-table text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Quản Lý Bàn</h5>
+                            <p class="card-text text-muted">Thêm, sửa, xóa và quản lý trạng thái bàn</p>
+                            <a asp-controller="Admin" asp-action="Tables" class="btn btn-primary w-100">
+                                <i class="bi bi-arrow-right-circle me-2"></i>Vào Quản Lý Bàn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quản lý Món Ăn -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-menu-button-wide text-success" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Quản Lý Món Ăn</h5>
+                            <p class="card-text text-muted">Thêm, sửa, xóa món ăn và danh mục</p>
+                            <a asp-controller="Admin" asp-action="MenuItems" class="btn btn-success w-100">
+                                <i class="bi bi-arrow-right-circle me-2"></i>Vào Quản Lý Món Ăn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quản lý Đơn Hàng -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-receipt text-warning" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">Quản Lý Đơn Hàng</h5>
+                            <p class="card-text text-muted">Xem và cập nhật trạng thái đơn hàng</p>
+                            <a asp-controller="Admin" asp-action="Orders" class="btn btn-warning w-100">
+                                <i class="bi bi-arrow-right-circle me-2"></i>Vào Quản Lý Đơn Hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-info-circle me-2"></i>Thông Tin Nhanh
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-2 mb-3 mb-md-0">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="text-primary mb-1" id="stat-total-tables">@ViewBag.TotalTables</h3>
+                                        <p class="text-muted mb-0">Tổng Số Bàn</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-3 mb-md-0">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="text-success mb-1" id="stat-free-tables">@ViewBag.FreeTables</h3>
+                                        <p class="text-muted mb-0">Bàn Trống</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-3 mb-md-0">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="text-danger mb-1" id="stat-occupied-tables">@ViewBag.OccupiedTables</h3>
+                                        <p class="text-muted mb-0">Bàn Có Khách</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-3 mb-md-0">
+                                    <div class="p-3 bg-light rounded">
+                                        <h3 class="text-warning mb-1" id="stat-reserved-tables">@ViewBag.ReservedTables</h3>
+                                        <p class="text-muted mb-0">Bàn Đã Đặt</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-info bg-opacity-10 rounded border border-info">
+                                        <h3 class="text-info mb-1" id="stat-total-guests">
+                                            <i class="bi bi-people-fill me-2"></i>@ViewBag.TotalGuests
+                                        </h3>
+                                        <p class="text-muted mb-0">Tổng Lượng Khách Đang Ở Quán</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock-history me-1"></i>
+                                    Cập nhật lần cuối: <span id="last-update-time">--:--:--</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Real-time update thống kê
+        let autoRefreshInterval;
+        let isUpdating = false;
+        
+        // Cập nhật thống kê từ API (không reload trang)
+        async function updateStats() {
+            if (isUpdating) return; // Tránh gọi đồng thời
+            
+            isUpdating = true;
+            try {
+                const response = await fetch('@Url.Action("GetDashboardStats", "Admin")');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Cập nhật số liệu với animation
+                    updateStatValue('stat-total-tables', data.totalTables);
+                    updateStatValue('stat-free-tables', data.freeTables);
+                    updateStatValue('stat-occupied-tables', data.occupiedTables);
+                    updateStatValue('stat-reserved-tables', data.reservedTables);
+                    updateStatValue('stat-total-guests', data.totalGuests);
+                    
+                    // Cập nhật thời gian
+                    updateLastRefreshTime();
+                }
+            } catch (error) {
+                console.error('Lỗi khi cập nhật thống kê:', error);
+            } finally {
+                isUpdating = false;
+            }
+        }
+        
+        // Cập nhật giá trị với animation
+        function updateStatValue(elementId, newValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const oldValue = parseInt(element.textContent.replace(/\D/g, '')) || 0;
+            
+            if (oldValue !== newValue) {
+                // Thêm class để highlight khi có thay đổi
+                element.classList.add('stat-updated');
+                setTimeout(() => {
+                    element.classList.remove('stat-updated');
+                }, 2000);
+            }
+            
+            // Cập nhật giá trị (giữ nguyên icon nếu có)
+            const icon = element.querySelector('i');
+            if (icon) {
+                element.innerHTML = icon.outerHTML + ' ' + newValue;
+            } else {
+                element.textContent = newValue;
+            }
+        }
+        
+        // Hiển thị thời gian cập nhật cuối
+        function updateLastRefreshTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+            const timeElement = document.getElementById('last-update-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+        
+        // Refresh thủ công
+        function refreshStats() {
+            updateStats();
+        }
+        
+        // Bắt đầu auto-refresh mỗi 5 giây (real-time)
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLastRefreshTime();
+            updateStats(); // Cập nhật ngay lập tức
+            
+            // Cập nhật mỗi 5 giây
+            autoRefreshInterval = setInterval(updateStats, 5000);
+            
+            // Dừng auto-refresh khi rời khỏi trang
+            window.addEventListener('beforeunload', function() {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+        });
+    </script>
+    
+    <style>
+        .stat-updated {
+            animation: pulse 0.5s ease-in-out;
+            color: #0d6efd !important;
+        }
+        
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+}
+

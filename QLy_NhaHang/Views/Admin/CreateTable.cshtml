@@ -1,0 +1,79 @@
+@model QLy_NhaHang.Models.Table
+@{
+    ViewData["Title"] = "Thêm Bàn Mới";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-plus-circle me-2"></i>Thêm Bàn Mới
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="CreateTable" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Tên bàn -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="bi bi-table me-2 text-primary"></i>Tên Bàn <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control" placeholder="Ví dụ: Bàn 1, Bàn VIP 1..." />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Sức chứa -->
+                        <div class="mb-3">
+                            <label asp-for="Capacity" class="form-label fw-semibold">
+                                <i class="bi bi-people-fill me-2 text-primary"></i>Sức Chứa (người) <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Capacity" class="form-control" type="number" min="1" max="20" value="4" />
+                            <span asp-validation-for="Capacity" class="text-danger"></span>
+                            <small class="form-text text-muted">Số người tối đa có thể ngồi (1-20 người)</small>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="mb-3">
+                            <label asp-for="CurrentStatus" class="form-label fw-semibold">
+                                <i class="bi bi-info-circle me-2 text-primary"></i>Trạng Thái <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="CurrentStatus" asp-items="ViewBag.StatusList" class="form-select">
+                            </select>
+                            <span asp-validation-for="CurrentStatus" class="text-danger"></span>
+                        </div>
+
+                        <!-- Ẩn/Hiện -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsHidden" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsHidden" class="form-check-label">
+                                    Ẩn bàn này (không hiển thị cho khách đặt bàn)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Thêm Bàn
+                            </button>
+                            <a asp-action="Tables" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Quay Lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

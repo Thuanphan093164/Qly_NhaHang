@@ -1,0 +1,532 @@
+@model QLy_NhaHang.ViewModels.TableSelectionViewModel
+@{
+    ViewData["Title"] = "Chọn Bàn - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/booking.css" asp-append-version="true" />
+    <style>
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .table-card {
+            aspect-ratio: 1;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-card.available {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .table-card.available:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
+            border-color: #fff;
+        }
+
+        .table-card.occupied {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .table-card.reserved {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .table-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-info {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .table-status-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 0.5rem;
+        }
+
+        .legend-color.available {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .legend-color.occupied {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .legend-color.reserved {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+    </style>
+}
+
+<div class="booking-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bold mb-3">Đặt Bàn Tại Nhà Hàng</h1>
+                    <p class="text-muted lead mb-4">Vui lòng chọn bàn trống (màu xanh) để đặt bàn</p>
+                    <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-calendar-check text-primary" style="font-size: 1.5rem;"></i>
+                            <span class="text-muted">Đặt bàn nhanh chóng</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-check text-success" style="font-size: 1.5rem;"></i>
+                            <span class="text-muted">Xác nhận ngay</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body p-4">
+                        <label class="form-label fw-semibold mb-3 d-flex align-items-center">
+                            <i class="bi bi-funnel-fill text-primary me-2" style="font-size: 1.25rem;"></i>
+                            <span>Lọc theo trạng thái</span>
+                        </label>
+                        <div class="btn-group w-100" role="group">
+                            <a asp-action="Index" asp-route-filter="all" 
+                               class="btn @(Model.CurrentFilter == "all" ? "btn-primary" : "btn-outline-primary")">
+                                <i class="bi bi-grid-3x3-gap me-1"></i>Tất cả
+                            </a>
+                            <a asp-action="Index" asp-route-filter="free" 
+                               class="btn @(Model.CurrentFilter == "free" ? "btn-success" : "btn-outline-success")">
+                                <i class="bi bi-circle-fill me-1"></i>Trống
+                            </a>
+                            <a asp-action="Index" asp-route-filter="occupied" 
+                               class="btn @(Model.CurrentFilter == "occupied" ? "btn-danger" : "btn-outline-danger")">
+                                <i class="bi bi-circle-fill me-1"></i>Có khách
+                            </a>
+                            <a asp-action="Index" asp-route-filter="reserved" 
+                               class="btn @(Model.CurrentFilter == "reserved" ? "btn-warning" : "btn-outline-warning")">
+                                <i class="bi bi-circle-fill me-1"></i>Đã đặt
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="legend mb-4">
+                    <div class="legend-item">
+                        <div class="legend-color available"></div>
+                        <span>Bàn trống - Có thể đặt</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color occupied"></div>
+                        <span>Bàn đang có khách</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color reserved"></div>
+                        <span>Bàn đã được đặt trước</span>
+                    </div>
+                </div>
+
+                <!-- Table Grid -->
+                @if (Model.Tables != null && Model.Tables.Any())
+                {
+                    <div class="table-grid">
+                        @foreach (var table in Model.Tables)
+                        {
+                            var statusClass = table.TrangThai switch
+                            {
+                                QLy_NhaHang.Models.Enums.TableStatus.Free => "available",
+                                QLy_NhaHang.Models.Enums.TableStatus.Occupied => "occupied",
+                                QLy_NhaHang.Models.Enums.TableStatus.Reserved => "reserved",
+                                _ => "occupied"
+                            };
+
+                            var statusText = table.TrangThai switch
+                            {
+                                QLy_NhaHang.Models.Enums.TableStatus.Free => "Trống",
+                                QLy_NhaHang.Models.Enums.TableStatus.Occupied => "Có khách",
+                                QLy_NhaHang.Models.Enums.TableStatus.Reserved => "Đã đặt",
+                                _ => "Không xác định"
+                            };
+
+                            <div class="table-card @statusClass" 
+                                 data-table-id="@table.Ma" 
+                                 data-table-name="@table.Ten"
+                                 data-available="@table.IsAvailable.ToString().ToLower()"
+                                 onclick="selectTable(@table.Ma, '@table.Ten', @table.IsAvailable.ToString().ToLower())">
+                                <span class="table-status-badge">@statusText</span>
+                                <div class="table-number">@table.Ten</div>
+                                <div class="table-info">
+                                    <i class="bi bi-people-fill"></i> @table.SucChua người
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning text-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Hiện chưa có bàn nào. Vui lòng liên hệ quản lý.
+                    </div>
+                }
+
+                <!-- Back Button -->
+                <div class="text-center mt-5 pt-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg px-5">
+                        <i class="bi bi-arrow-left me-2"></i>Quay Lại Trang Chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="bookingModalLabel">
+                    <i class="bi bi-calendar-check me-2"></i>Đặt Bàn - <span id="selectedTableName"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bookingForm" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="tableId" name="MaBan" />
+
+                    <!-- Tên khách hàng -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-flex align-items-center">
+                            <i class="bi bi-person-fill text-primary me-2"></i>
+                            <span>Tên khách hàng <span class="text-danger">*</span></span>
+                        </label>
+                        <input type="text" class="form-control form-control-lg" name="TenKhach" required 
+                               placeholder="Nhập tên của bạn" />
+                    </div>
+
+                    <!-- Số điện thoại -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-flex align-items-center">
+                            <i class="bi bi-telephone-fill text-primary me-2"></i>
+                            <span>Số điện thoại <span class="text-danger">*</span></span>
+                        </label>
+                        <input type="tel" class="form-control form-control-lg" name="SoDienThoai" required 
+                               placeholder="0123 456 789" />
+                    </div>
+
+                    <!-- Ngày và giờ đặt bàn -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-flex align-items-center">
+                            <i class="bi bi-calendar-event-fill text-primary me-2"></i>
+                            <span>Ngày và giờ đặt bàn <span class="text-danger">*</span></span>
+                        </label>
+                        <input type="datetime-local" class="form-control form-control-lg" name="GioDat" required 
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                        <small class="form-text text-muted mt-2 d-block">
+                            <i class="bi bi-info-circle me-1"></i> Vui lòng chọn thời gian sau thời điểm hiện tại
+                        </small>
+                    </div>
+
+                    <!-- Số người -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-flex align-items-center">
+                            <i class="bi bi-people-fill text-primary me-2"></i>
+                            <span>Số người <span class="text-danger">*</span></span>
+                        </label>
+                        <input type="number" class="form-control form-control-lg" name="SoNguoi" required 
+                               min="1" max="50" value="2" />
+                    </div>
+
+                    <!-- Ghi chú -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold d-flex align-items-center">
+                            <i class="bi bi-chat-left-text-fill text-primary me-2"></i>
+                            <span>Ghi chú (tùy chọn)</span>
+                        </label>
+                        <textarea class="form-control" name="GhiChu" rows="4" 
+                                  placeholder="Ví dụ: Bàn gần cửa sổ, yêu cầu đặc biệt..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Hủy
+                </button>
+                <button type="submit" form="bookingForm" class="btn btn-primary px-4">
+                    <i class="bi bi-check-circle-fill me-2"></i>Xác Nhận Đặt Bàn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content success-modal-content">
+            <div class="modal-body p-0">
+                <div class="success-modal-wrapper">
+                    <!-- Success Icon với Animation -->
+                    <div class="success-icon-wrapper">
+                        <div class="success-icon-circle">
+                            <i class="bi bi-check-circle-fill success-icon"></i>
+                        </div>
+                        <div class="success-ripple"></div>
+                        <div class="success-ripple delay-1"></div>
+                        <div class="success-ripple delay-2"></div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <h1 class="success-title-modal">Đặt Bàn Thành Công!</h1>
+                    
+                    <div class="success-message-box-modal" id="successMessageContent">
+                        <i class="bi bi-envelope-check-fill me-2"></i>
+                        <span id="successMessageText"></span>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div class="info-cards-grid-modal">
+                        <div class="info-card-modal">
+                            <div class="info-card-icon-modal">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="info-card-content-modal">
+                                <h6 class="info-card-title-modal">Xác nhận nhanh</h6>
+                                <p class="info-card-text-modal">Trong vòng 30 phút</p>
+                            </div>
+                        </div>
+                        <div class="info-card-modal">
+                            <div class="info-card-icon-modal">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div class="info-card-content-modal">
+                                <h6 class="info-card-title-modal">Giữ máy</h6>
+                                <p class="info-card-text-modal">Trả lời cuộc gọi</p>
+                            </div>
+                        </div>
+                        <div class="info-card-modal">
+                            <div class="info-card-icon-modal">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <div class="info-card-content-modal">
+                                <h6 class="info-card-title-modal">Thay đổi?</h6>
+                                <p class="info-card-text-modal">Gọi: <strong>0123 456 789</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="success-actions-modal">
+                        <button type="button" class="btn btn-primary btn-lg success-btn-primary-modal" onclick="closeSuccessModal()">
+                            <i class="bi bi-house-fill me-2"></i>Về Trang Chủ
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-lg success-btn-secondary-modal" onclick="closeSuccessModalAndReload()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Đặt Bàn Khác
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function selectTable(tableId, tableName, isAvailable) {
+            if (!isAvailable) {
+                alert('Bàn này không thể đặt được. Vui lòng chọn bàn khác (màu xanh).');
+                return;
+            }
+
+            // Set table info
+            document.getElementById('tableId').value = tableId;
+            document.getElementById('selectedTableName').textContent = tableName;
+
+            // Set default datetime (1 hour from now)
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            now.setMinutes(0);
+            const datetimeString = now.toISOString().slice(0, 16);
+            document.querySelector('input[name="GioDat"]').value = datetimeString;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        }
+
+        // Set min datetime for input
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[type="datetime-local"]');
+            if (dateInput) {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                dateInput.min = now.toISOString().slice(0, 16);
+            }
+
+            // Intercept form submit
+            const bookingForm = document.getElementById('bookingForm');
+            const submitBtn = document.querySelector('button[form="bookingForm"][type="submit"]');
+            
+            // Function to handle form submission
+            async function handleFormSubmit(e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                // Validate form first
+                if (!bookingForm.checkValidity()) {
+                    bookingForm.reportValidity();
+                    return;
+                }
+                
+                // Disable submit button
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+
+                try {
+                    // Get form data
+                    const formData = new FormData(bookingForm);
+                    
+                    // Get AntiForgeryToken
+                    const tokenInput = bookingForm.querySelector('input[name="__RequestVerificationToken"]');
+                    if (!tokenInput) {
+                        alert('Lỗi bảo mật. Vui lòng tải lại trang.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        return;
+                    }
+
+                    // Submit via AJAX
+                    const response = await fetch('@Url.Action("Create", "Booking")', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    // Check if response is OK
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Close booking modal
+                        const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
+                        if (bookingModal) {
+                            bookingModal.hide();
+                        }
+
+                        // Show success message
+                        document.getElementById('successMessageText').textContent = result.message;
+                        
+                        // Show success modal
+                        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                        successModal.show();
+
+                        // Reset form
+                        bookingForm.reset();
+                    } else {
+                        // Show error
+                        alert(result.message || 'Có lỗi xảy ra khi đặt bàn. Vui lòng thử lại.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    let errorMessage = 'Có lỗi xảy ra khi đặt bàn. Vui lòng thử lại.';
+                    
+                    // Try to parse error response
+                    if (error.message && error.message.includes('HTTP error')) {
+                        errorMessage = 'Lỗi kết nối. Vui lòng kiểm tra lại kết nối mạng và thử lại.';
+                    }
+                    
+                    alert(errorMessage);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
+            
+            if (bookingForm && submitBtn) {
+                // Handle form submit event
+                bookingForm.addEventListener('submit', handleFormSubmit);
+                
+                // Also handle button click (button is outside form)
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleFormSubmit(e);
+                });
+            }
+        });
+
+        function closeSuccessModal() {
+            const successModal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+            if (successModal) {
+                successModal.hide();
+            }
+            window.location.href = '@Url.Action("Index", "Home")';
+        }
+
+        function closeSuccessModalAndReload() {
+            const successModal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+            if (successModal) {
+                successModal.hide();
+            }
+            // Reload page to update table status
+            setTimeout(() => location.reload(), 300);
+        }
+    </script>
+}
+

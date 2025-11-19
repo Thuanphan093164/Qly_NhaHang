@@ -1,0 +1,237 @@
+/* ============================================
+   Home Page Styles
+   ============================================ */
+
+/* Hero Banner Section */
+.hero-banner {
+    padding-top: 0;
+    padding-bottom: 80px;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4)),
+                      url('/images/banner1.jpg');
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 70vh;
+    max-height: 800px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    width: 100%;
+    left: 0;
+    right: 0;
+    background-color: #000; /* Màu nền khi ảnh không fill hết */
+}
+
+.hero-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(30, 60, 114, 0.3) 0%, rgba(42, 82, 152, 0.3) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-banner .container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.hero-banner h1 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.hero-banner .lead {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.animate-fade-in-delay-2 {
+    animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+/* Best Seller Section */
+.best-seller-section {
+    padding: 3rem 0;
+}
+
+.best-seller-section .section-title {
+    margin-bottom: 3rem;
+}
+
+.best-seller-section .section-divider {
+    width: 25%;
+    margin: 0 auto;
+    border-top: 3px solid #ffc107;
+}
+
+/* Menu Item Card */
+.menu-item-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    background: white;
+    backdrop-filter: blur(10px);
+}
+
+.menu-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.menu-item-image-container {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.menu-item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.menu-item-card:hover .menu-item-image {
+    transform: scale(1.1);
+}
+
+.menu-item-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.menu-item-placeholder i {
+    font-size: 3rem;
+    color: #ccc;
+}
+
+.menu-item-category-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.menu-item-price {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Info Section */
+.info-section {
+    background-color: #f8f9fa;
+    padding: 3rem 0;
+}
+
+.info-item {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.info-item-icon {
+    font-size: 3rem;
+    color: #ffc107;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .hero-banner {
+        background-size: cover; /* Dùng cover trên màn hình lớn để fill đầy */
+        background-position: center center;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-banner {
+        background-size: cover;
+        background-position: center center;
+        min-height: 60vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-banner {
+        min-height: 50vh;
+        max-height: 600px;
+        padding-bottom: 60px;
+        background-attachment: scroll; /* Tắt fixed trên mobile để tối ưu hiệu suất */
+        background-size: cover; /* Dùng cover trên tablet/mobile để tránh khoảng đen */
+        background-position: center center;
+    }
+
+    .hero-banner h1 {
+        font-size: 2rem;
+        padding: 0 1rem;
+    }
+
+    .hero-banner .lead {
+        font-size: 1rem;
+        padding: 0 1rem !important;
+    }
+
+    .menu-item-image-container {
+        height: 180px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-banner {
+        min-height: 40vh;
+        max-height: 500px;
+        padding-bottom: 40px;
+        background-size: cover; /* Dùng cover trên mobile để tránh khoảng đen */
+        background-position: center center;
+    }
+
+    .hero-banner h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero-banner .lead {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .hero-banner {
+        min-height: 35vh;
+        background-size: cover;
+        background-position: center top; /* Căn trên cùng trên màn hình rất nhỏ */
+    }
+}
+

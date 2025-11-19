@@ -1,0 +1,114 @@
+/* ============================================
+   Admin Pages Styles
+   ============================================ */
+
+.admin-container {
+    min-height: calc(100vh - 200px);
+}
+
+/* Table Styles */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    border-bottom: none;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 500;
+}
+
+/* Summary Cards */
+.card.bg-success,
+.card.bg-danger,
+.card.bg-warning {
+    border: none;
+    border-radius: 0.75rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.bg-success:hover,
+.card.bg-danger:hover,
+.card.bg-warning:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card.bg-success .card-title,
+.card.bg-danger .card-title,
+.card.bg-warning .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.card.bg-success h3,
+.card.bg-danger h3,
+.card.bg-warning h3 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Form Styles */
+.form-label {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Button Styles */
+.btn-group .btn {
+    margin: 0 2px;
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 0.75rem;
+    border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        margin: 2px 0;
+        width: 100%;
+    }
+}
+

@@ -1,0 +1,276 @@
+@model List<QLy_NhaHang.Models.Table>
+@{
+    ViewData["Title"] = "Quản Lý Bàn";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-table me-2"></i>Quản Lý Bàn
+        </h2>
+        <a asp-action="CreateTable" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Thêm Bàn Mới
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Table List -->
+    @if (Model != null && Model.Any())
+    {
+        <!-- AntiForgeryToken cho AJAX requests -->
+        @Html.AntiForgeryToken()
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên Bàn</th>
+                                <th>Sức Chứa</th>
+                                <th>Trạng Thái</th>
+                                <th>Ẩn</th>
+                                <th class="text-end">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var table in Model)
+                            {
+                                var statusClass = table.CurrentStatus switch
+                                {
+                                    QLy_NhaHang.Models.Enums.TableStatus.Free => "success",
+                                    QLy_NhaHang.Models.Enums.TableStatus.Occupied => "danger",
+                                    QLy_NhaHang.Models.Enums.TableStatus.Reserved => "warning",
+                                    _ => "secondary"
+                                };
+
+                                var statusText = table.CurrentStatus switch
+                                {
+                                    QLy_NhaHang.Models.Enums.TableStatus.Free => "Trống",
+                                    QLy_NhaHang.Models.Enums.TableStatus.Occupied => "Có khách",
+                                    QLy_NhaHang.Models.Enums.TableStatus.Reserved => "Đã đặt",
+                                    _ => "Không xác định"
+                                };
+
+                                <tr>
+                                    <td>@table.Id</td>
+                                    <td>
+                                        <strong>@table.Name</strong>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-people-fill text-muted me-1"></i>@table.Capacity người
+                                    </td>
+                                    <td>
+                                        @{
+                                            var currentStatusValue = (int)table.CurrentStatus;
+                                            // Debug: Log giá trị để kiểm tra
+                                            // @currentStatusValue
+                                        }
+                                        <select class="form-select form-select-sm border-primary" 
+                                                style="width: auto; min-width: 130px; cursor: pointer;" 
+                                                id="status-select-@table.Id" 
+                                                onchange="updateTableStatus(@table.Id, this.value)"
+                                                data-current-status="@currentStatusValue"
+                                                title="Chọn để cập nhật trạng thái - Hiện tại: @currentStatusValue">
+                                            @switch (currentStatusValue)
+                                            {
+                                                case 0:
+                                                    <option value="0" selected>🟢 Trống</option>
+                                                    <option value="1">🔴 Có khách</option>
+                                                    <option value="2">🟡 Đã đặt</option>
+                                                    break;
+                                                case 1:
+                                                    <option value="0">🟢 Trống</option>
+                                                    <option value="1" selected>🔴 Có khách</option>
+                                                    <option value="2">🟡 Đã đặt</option>
+                                                    break;
+                                                case 2:
+                                                    <option value="0">🟢 Trống</option>
+                                                    <option value="1">🔴 Có khách</option>
+                                                    <option value="2" selected>🟡 Đã đặt</option>
+                                                    break;
+                                                default:
+                                                    <option value="0" selected>🟢 Trống</option>
+                                                    <option value="1">🔴 Có khách</option>
+                                                    <option value="2">🟡 Đã đặt</option>
+                                                    break;
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        @if (table.IsHidden)
+                                        {
+                                            <span class="badge bg-secondary">Ẩn</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">Hiển thị</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="EditTable" asp-route-id="@table.Id" 
+                                               class="btn btn-sm btn-outline-primary" title="Sửa">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-action="DeleteTable" asp-route-id="@table.Id" 
+                                                  method="post" class="d-inline"
+                                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa bàn @table.Name?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-check-circle me-2"></i>Bàn Trống
+                        </h5>
+                        <h3>@Model.Count(t => t.CurrentStatus == QLy_NhaHang.Models.Enums.TableStatus.Free)</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-x-circle me-2"></i>Bàn Có Khách
+                        </h5>
+                        <h3>@Model.Count(t => t.CurrentStatus == QLy_NhaHang.Models.Enums.TableStatus.Occupied)</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-clock-history me-2"></i>Bàn Đã Đặt
+                        </h5>
+                        <h3>@Model.Count(t => t.CurrentStatus == QLy_NhaHang.Models.Enums.TableStatus.Reserved)</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Chưa có bàn nào. Hãy <a asp-action="CreateTable" class="alert-link">thêm bàn mới</a>.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function updateTableStatus(tableId, newStatus) {
+            const statusSelect = document.getElementById(`status-select-${tableId}`);
+            const oldStatus = statusSelect.getAttribute('data-current-status');
+            
+            // Nếu không thay đổi, không làm gì
+            if (oldStatus === newStatus) {
+                statusSelect.value = oldStatus;
+                return;
+            }
+            
+            // Disable select trong lúc đang cập nhật
+            statusSelect.disabled = true;
+            
+            try {
+                // Lấy AntiForgeryToken
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+                
+                const response = await fetch('@Url.Action("UpdateTableStatus", "Admin")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        tableId: tableId,
+                        newStatus: parseInt(newStatus)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Cập nhật data attribute để lưu trạng thái mới
+                    statusSelect.setAttribute('data-current-status', newStatus);
+                    
+                    // Hiển thị thông báo thành công
+                    showToast('success', `Đã cập nhật trạng thái bàn thành công!`);
+                    
+                    // Reload trang sau 1 giây để cập nhật thống kê và sắp xếp lại
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    // Rollback nếu lỗi - khôi phục giá trị cũ
+                    statusSelect.value = oldStatus;
+                    showToast('error', data.message || 'Có lỗi xảy ra khi cập nhật trạng thái');
+                }
+            } catch (error) {
+                console.error('Lỗi khi cập nhật trạng thái:', error);
+                // Rollback nếu lỗi - khôi phục giá trị cũ
+                statusSelect.value = oldStatus;
+                showToast('error', 'Có lỗi xảy ra khi cập nhật trạng thái');
+            } finally {
+                statusSelect.disabled = false;
+            }
+        }
+        
+        function showToast(type, message) {
+            // Tạo toast notification đơn giản
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}-fill me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(toast);
+            
+            // Tự động xóa sau 3 giây
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+}
+
