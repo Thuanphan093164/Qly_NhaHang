@@ -1,0 +1,30 @@
+@{
+    // Lấy action hiện tại để highlight menu item tương ứng
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<div class="menu-sidebar">
+    <div class="sidebar-header">
+        <h3 class="sidebar-title">Dùng bữa tại Rose Thảo Điền</h3>
+    </div>
+    <nav class="sidebar-nav">
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item @(currentAction == "MonAn" ? "active" : "")">
+                <a asp-controller="Home" asp-action="MonAn" class="sidebar-menu-link">
+                    <i class="bi bi-egg-fried me-2"></i>MÓN ĂN
+                </a>
+            </li>
+            <li class="sidebar-menu-item @(currentAction == "ThucUong" ? "active" : "")">
+                <a asp-controller="Home" asp-action="ThucUong" class="sidebar-menu-link">
+                    <i class="bi bi-cup-straw me-2"></i>THỨC UỐNG
+                </a>
+            </li>
+            <li class="sidebar-menu-item @(currentAction == "Ruou" ? "active" : "")">
+                <a asp-controller="Home" asp-action="Ruou" class="sidebar-menu-link">
+                    <i class="bi bi-wine me-2"></i>RƯỢU
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+

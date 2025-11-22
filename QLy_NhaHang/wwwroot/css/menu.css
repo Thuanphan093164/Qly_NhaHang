@@ -1,0 +1,146 @@
+/* ============================================
+   Menu Page Layout
+   ============================================ */
+
+.menu-page-container {
+    min-height: calc(100vh - 200px);
+    background-color: #f8f9fa;
+}
+
+/* ============================================
+   Sidebar Styles
+   ============================================ */
+
+.menu-sidebar {
+    background-color: #fff;
+    min-height: calc(100vh - 200px);
+    padding: 2rem 1.5rem;
+    border-right: 1px solid #e9ecef;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #8B4513;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.sidebar-nav {
+    margin-top: 1rem;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu-item {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-menu-link {
+    display: block;
+    padding: 1rem 1.25rem;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-menu-link:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+    padding-left: 1.5rem;
+}
+
+.sidebar-menu-item.active .sidebar-menu-link {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    border-left-color: #0d6efd;
+    font-weight: 700;
+}
+
+.sidebar-menu-link i {
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   Content Section Styles
+   ============================================ */
+
+.menu-content-section {
+    background-color: #fff;
+    min-height: calc(100vh - 200px);
+}
+
+.menu-content-title {
+    font-size: 2rem;
+    color: #8B4513;
+    margin-bottom: 2rem;
+}
+
+/* ============================================
+   Responsive Styles
+   ============================================ */
+
+@media (max-width: 991.98px) {
+    .menu-sidebar {
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 1.5rem 1rem;
+    }
+
+    .sidebar-title {
+        font-size: 1.1rem;
+    }
+
+    .sidebar-menu-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .menu-content-section {
+        padding: 2rem 1rem !important;
+    }
+
+    .menu-content-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .menu-sidebar {
+        padding: 1rem 0.75rem;
+    }
+
+    .sidebar-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .sidebar-menu-link {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.85rem;
+    }
+
+    .menu-content-title {
+        font-size: 1.25rem;
+    }
+}
+

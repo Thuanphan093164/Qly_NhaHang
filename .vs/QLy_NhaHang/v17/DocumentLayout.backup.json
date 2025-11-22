@@ -1,0 +1,57 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\WEB\\C#\\Qly_NhaHang\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A502EE05-1419-45F7-8E95-1318F93EC6B6}|QLy_NhaHang\\QLy_NhaHang.csproj|e:\\web\\c#\\qly_nhahang\\qly_nhahang\\views\\admin\\menuitems.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A502EE05-1419-45F7-8E95-1318F93EC6B6}|QLy_NhaHang\\QLy_NhaHang.csproj|solutionrelative:qly_nhahang\\views\\admin\\menuitems.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A502EE05-1419-45F7-8E95-1318F93EC6B6}|QLy_NhaHang\\QLy_NhaHang.csproj|e:\\web\\c#\\qly_nhahang\\qly_nhahang\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A502EE05-1419-45F7-8E95-1318F93EC6B6}|QLy_NhaHang\\QLy_NhaHang.csproj|solutionrelative:qly_nhahang\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MenuItems.cshtml",
+              "DocumentMoniker": "E:\\WEB\\C#\\Qly_NhaHang\\QLy_NhaHang\\Views\\Admin\\MenuItems.cshtml",
+              "RelativeDocumentMoniker": "QLy_NhaHang\\Views\\Admin\\MenuItems.cshtml",
+              "ToolTip": "E:\\WEB\\C#\\Qly_NhaHang\\QLy_NhaHang\\Views\\Admin\\MenuItems.cshtml",
+              "RelativeToolTip": "QLy_NhaHang\\Views\\Admin\\MenuItems.cshtml",
+              "ViewState": "AgIAADUAAAAAAAAAAAAiwEMAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-20T13:29:36.066Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "E:\\WEB\\C#\\Qly_NhaHang\\QLy_NhaHang\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "QLy_NhaHang\\Controllers\\AdminController.cs",
+              "ToolTip": "E:\\WEB\\C#\\Qly_NhaHang\\QLy_NhaHang\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "QLy_NhaHang\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAADwBAAAAAAAAAAAiwGgDAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-20T13:05:52.093Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

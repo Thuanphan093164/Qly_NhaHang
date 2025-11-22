@@ -1,0 +1,210 @@
+@model QLy_NhaHang.Models.MenuItem
+
+<div class="create-form-container">
+        <div class="card-body p-4">
+            <form id="createMenuItemForm" asp-action="@ViewBag.ActionName" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row">
+                    <!-- Cột trái -->
+                    <div class="col-md-6">
+                        <!-- Tên món ăn -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-2 text-success"></i>Tên Món Ăn <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control" placeholder="Ví dụ: Phở Bò, Cà Phê Sữa Đá..." />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Danh mục -->
+                        @if (ViewBag.CategoryName != null)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-folder me-2 text-success"></i>Danh Mục
+                                </label>
+                                <input type="text" class="form-control" value="@ViewBag.CategoryName" readonly style="background-color: #e9ecef;" />
+                                <input type="hidden" asp-for="CategoryId" value="@ViewBag.CategoryId" />
+                                <small class="form-text text-muted">Danh mục đã được chọn tự động</small>
+                            </div>
+                        }
+
+                        <!-- Giá -->
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label fw-semibold">
+                                <i class="bi bi-currency-dollar me-2 text-success"></i>Giá (VNĐ) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="Price" class="form-control" type="number" step="1000" min="0" placeholder="Ví dụ: 50000" />
+                                <span class="input-group-text">đ</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <!-- Đơn vị -->
+                        <div class="mb-3">
+                            <label asp-for="Unit" class="form-label fw-semibold">
+                                <i class="bi bi-rulers me-2 text-success"></i>Đơn Vị
+                            </label>
+                            <input asp-for="Unit" class="form-control" value="phần" placeholder="Ví dụ: phần, ly, chai..." />
+                            <span asp-validation-for="Unit" class="text-danger"></span>
+                            <small class="form-text text-muted">Mặc định: phần</small>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải -->
+                    <div class="col-md-6">
+                        <!-- Ảnh (URL) -->
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label fw-semibold">
+                                <i class="bi bi-image me-2 text-success"></i>Ảnh Món Ăn (URL)
+                            </label>
+                            <input asp-for="ImageUrl" class="form-control" type="url" placeholder="https://example.com/image.jpg" />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            <small class="form-text text-muted">Nhập URL ảnh hoặc đường dẫn ảnh</small>
+                            
+                            <!-- Preview ảnh -->
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+                            </div>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">
+                                <i class="bi bi-card-text me-2 text-success"></i>Mô Tả
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả về món ăn, thành phần, hương vị..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <small class="form-text text-muted">Tối đa 500 ký tự</small>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                                <label asp-for="IsActive" class="form-check-label">
+                                    <i class="bi bi-check-circle me-1"></i>Đang hoạt động
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">Món ăn sẽ hiển thị trên menu khi bật</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        @if (ViewBag.CategoryName != null)
+                        {
+                            <span>Đăng @ViewBag.CategoryName</span>
+                        }
+                        else
+                        {
+                            <span>Thêm Món Ăn</span>
+                        }
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Preview ảnh khi nhập URL
+    document.getElementById('ImageUrl')?.addEventListener('input', function(e) {
+        const url = e.target.value;
+        const previewDiv = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        
+        if (url && url.startsWith('http')) {
+            previewImg.src = url;
+            previewDiv.style.display = 'block';
+            previewImg.onerror = function() {
+                previewDiv.style.display = 'none';
+            };
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    });
+
+    // Xử lý submit form bằng AJAX
+    document.getElementById('createMenuItemForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        const modalBody = document.getElementById('createMenuItemModalBody');
+        
+        // Validate form
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': form.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // Nếu redirect, đóng modal và reload trang để hiển thị thông báo
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createMenuItemModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                window.location.href = response.url;
+            } else if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Server error');
+            }
+        })
+        .then(html => {
+            if (html) {
+                // Nếu có HTML trả về (có lỗi validation), hiển thị lại form trong modal
+                const modalBody = document.getElementById('createMenuItemModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = html;
+                    if (typeof $.validator !== 'undefined') {
+                        $.validator.unobtrusive.parse('#createMenuItemForm');
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi đăng bài. Vui lòng thử lại.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    function clearForm() {
+        // Reset form
+        const form = document.getElementById('createMenuItemForm');
+        if (form) {
+            form.reset();
+            const previewDiv = document.getElementById('imagePreview');
+            if (previewDiv) {
+                previewDiv.style.display = 'none';
+            }
+        }
+    }
+</script>
+

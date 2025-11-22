@@ -104,6 +104,117 @@
         .legend-color.reserved {
             background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
         }
+
+        /* Table Grid in Modal */
+        .table-grid-modal {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .table-card-modal {
+            aspect-ratio: 1;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-card-modal.available {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .table-card-modal.available:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+            border-color: #fff;
+        }
+
+        .table-card-modal.occupied {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .table-card-modal.occupied:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+            border-color: #fff;
+        }
+
+        .table-card-modal.reserved {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+        }
+
+        .table-card-modal.reserved:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
+            border-color: #fff;
+        }
+
+        .table-card-modal .table-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .table-card-modal .table-info {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Menu Modal Styles */
+        .menu-sidebar-modal {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .menu-content-modal {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .menu-category-btn.active {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        .menu-category-btn:hover {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        #menuModal .modal-dialog {
+            max-width: 90%;
+        }
+        
+        #menuModal .modal-body {
+            max-height: 70vh;
+        }
+        
+        .menu-category-btn.btn-outline-success.active {
+            background-color: #198754;
+            color: white;
+            border-color: #198754;
+        }
+        
+        .menu-category-btn.btn-outline-success:hover {
+            background-color: #198754;
+            color: white;
+            border-color: #198754;
+        }
     </style>
 }
 
@@ -115,6 +226,14 @@
                 <div class="text-center mb-5">
                     <h1 class="display-5 fw-bold mb-3">Đặt Bàn Tại Nhà Hàng</h1>
                     <p class="text-muted lead mb-4">Vui lòng chọn bàn trống (màu xanh) để đặt bàn</p>
+                    
+                    <!-- Nút Xác nhận bàn -->
+                    <div class="mb-4">
+                        <button type="button" class="btn btn-primary btn-lg px-5" data-bs-toggle="modal" data-bs-target="#selectTableModal">
+                            <i class="bi bi-check-circle-fill me-2"></i>Xác Nhận Đúng Bàn Bạn Ngồi
+                        </button>
+                    </div>
+                    
                     <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-calendar-check text-primary" style="font-size: 1.5rem;"></i>
@@ -220,6 +339,155 @@
                     <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg px-5">
                         <i class="bi bi-arrow-left me-2"></i>Quay Lại Trang Chủ
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Select Table Modal -->
+<div class="modal fade" id="selectTableModal" tabindex="-1" aria-labelledby="selectTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="selectTableModalLabel">
+                    <i class="bi bi-table me-2"></i>Chọn Bàn Bạn Đang Ngồi
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted mb-4 text-center">Vui lòng chọn bàn bạn đang ngồi để tiếp tục đặt món</p>
+                
+                <!-- Table Grid in Modal -->
+                <div class="table-grid-modal">
+                    @if (Model.Tables != null && Model.Tables.Any())
+                    {
+                        @foreach (var table in Model.Tables)
+                        {
+                            var statusClass = table.TrangThai switch
+                            {
+                                QLy_NhaHang.Models.Enums.TableStatus.Free => "available",
+                                QLy_NhaHang.Models.Enums.TableStatus.Occupied => "occupied",
+                                QLy_NhaHang.Models.Enums.TableStatus.Reserved => "reserved",
+                                _ => "occupied"
+                            };
+
+                            var statusText = table.TrangThai switch
+                            {
+                                QLy_NhaHang.Models.Enums.TableStatus.Free => "Trống",
+                                QLy_NhaHang.Models.Enums.TableStatus.Occupied => "Có khách",
+                                QLy_NhaHang.Models.Enums.TableStatus.Reserved => "Đã đặt",
+                                _ => "Không xác định"
+                            };
+
+                            <div class="table-card-modal @statusClass" 
+                                 data-table-id="@table.Ma" 
+                                 data-table-name="@table.Ten"
+                                 onclick="confirmTableSelection(@table.Ma, '@table.Ten', @(table.TrangThai == QLy_NhaHang.Models.Enums.TableStatus.Occupied ? "true" : "false"))">
+                                <span class="table-status-badge">@statusText</span>
+                                <div class="table-number">@table.Ten</div>
+                                <div class="table-info">
+                                    <i class="bi bi-people-fill"></i> @table.SucChua người
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning text-center w-100">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Hiện chưa có bàn nào.
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Menu Modal -->
+<div class="modal fade" id="menuModal" tabindex="-1" aria-labelledby="menuModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="menuModalLabel">
+                    <i class="bi bi-menu-button-wide me-2"></i>Thực Đơn - <span id="selectedTableNameInMenu"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0 h-100">
+                    <!-- Sidebar -->
+                    <div class="col-md-3 col-lg-2 border-end bg-light">
+                        <div class="menu-sidebar-modal p-3">
+                            <h6 class="fw-bold mb-3 text-primary">
+                                <i class="bi bi-list-ul me-2"></i>Danh Mục
+                            </h6>
+                            <nav class="menu-sidebar-nav">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <button class="btn btn-outline-primary w-100 text-start menu-category-btn active" 
+                                                data-category="mon-an" onclick="loadMenuCategory('mon-an', this)">
+                                            <i class="bi bi-egg-fried me-2"></i>Món Ăn
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button class="btn btn-outline-primary w-100 text-start menu-category-btn" 
+                                                data-category="thuc-uong" onclick="loadMenuCategory('thuc-uong', this)">
+                                            <i class="bi bi-cup-straw me-2"></i>Thức Uống
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button class="btn btn-outline-primary w-100 text-start menu-category-btn" 
+                                                data-category="ruou" onclick="loadMenuCategory('ruou', this)">
+                                            <i class="bi bi-wine me-2"></i>Rượu
+                                        </button>
+                                    </li>
+                                    <li class="mb-2">
+                                        <button class="btn btn-outline-success w-100 text-start menu-category-btn" 
+                                                data-category="cart" onclick="loadCartView(this)">
+                                            <i class="bi bi-cart-check me-2"></i>Xem Lại Các Món Đã Đặt
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Area -->
+                    <div class="col-md-9 col-lg-10">
+                        <div class="menu-content-modal p-4" style="max-height: 600px; overflow-y: auto;">
+                            <div id="menuItemsContainer">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Đang tải...</span>
+                                    </div>
+                                    <p class="text-muted mt-3">Đang tải thực đơn...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <div class="d-flex justify-content-between w-100 align-items-center">
+                    <div>
+                        <span class="text-muted">Tổng tiền: </span>
+                        <span class="fw-bold text-primary fs-5" id="totalAmount">0 đ</span>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>Đóng
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="confirmOrder()">
+                            <i class="bi bi-check-circle me-2"></i>Xác Nhận Đặt Món
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -377,8 +645,442 @@
     </div>
 </div>
 
+<!-- Order Success Modal -->
+<div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="orderSuccessModalLabel">
+                    <i class="bi bi-check-circle-fill me-2"></i>Đặt Món Thành Công
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-5">
+                <!-- Success Icon -->
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                
+                <!-- Title -->
+                <h2 class="fw-bold mb-3" id="orderSuccessTitle">
+                    Bàn <span id="orderTableName"></span> đặt món
+                </h2>
+                
+                <!-- Subtitle -->
+                <p class="lead text-muted mb-4" id="orderSuccessSubtitle">
+                    Cảm ơn bạn đã gọi món. Vui lòng đợi đầu bếp làm món và phục vụ bạn.<br>
+                    Cảm ơn!
+                </p>
+                
+                <!-- Order Summary -->
+                <div class="card bg-light mt-4">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="bi bi-list-check me-2"></i>Tóm tắt đơn hàng
+                        </h6>
+                        <div id="orderSummary" class="text-start">
+                            <!-- Order items will be displayed here -->
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Tổng tiền:</strong>
+                            <strong class="text-primary fs-5" id="orderTotalAmount">0 đ</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success btn-lg px-5" data-bs-dismiss="modal" onclick="closeOrderSuccessModal()">
+                    <i class="bi bi-check-circle me-2"></i>Đã Hiểu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
+        // Biến lưu thông tin bàn và giỏ hàng
+        let selectedTableId = null;
+        let selectedTableName = '';
+        let cart = [];
+
+        // Hàm xử lý khi chọn bàn từ modal "Xác nhận đúng bàn bạn ngồi"
+        function confirmTableSelection(tableId, tableName, isOccupied) {
+            // Đóng modal chọn bàn
+            const selectTableModal = bootstrap.Modal.getInstance(document.getElementById('selectTableModal'));
+            if (selectTableModal) {
+                selectTableModal.hide();
+            }
+
+            // Lưu thông tin bàn
+            selectedTableId = tableId;
+            selectedTableName = tableName;
+
+            // Set tên bàn trong modal thực đơn
+            document.getElementById('selectedTableNameInMenu').textContent = tableName;
+
+            // Reset giỏ hàng
+            cart = [];
+            updateTotalAmount();
+
+            // Mở modal thực đơn
+            const menuModalElement = document.getElementById('menuModal');
+            const menuModal = new bootstrap.Modal(menuModalElement);
+            
+            // Load menu mặc định (Món ăn) sau khi modal đã hiển thị
+            menuModalElement.addEventListener('shown.bs.modal', function() {
+                loadMenuCategory('mon-an', document.querySelector('.menu-category-btn[data-category="mon-an"]'));
+            }, { once: true });
+            
+            menuModal.show();
+        }
+
+        // Hàm load menu items theo category
+        async function loadMenuCategory(category, buttonElement) {
+            // Update active state của buttons
+            document.querySelectorAll('.menu-category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+
+            // Show loading
+            const container = document.getElementById('menuItemsContainer');
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="text-muted mt-3">Đang tải thực đơn...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`@Url.Action("GetMenuItemsByCategory", "Booking")?category=${category}`);
+                if (!response.ok) {
+                    throw new Error('Lỗi khi tải menu');
+                }
+                const html = await response.text();
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading menu:', error);
+                container.innerHTML = `
+                    <div class="alert alert-danger text-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Có lỗi xảy ra khi tải thực đơn. Vui lòng thử lại.
+                    </div>
+                `;
+            }
+        }
+
+        // Hàm load giỏ hàng
+        function loadCartView(buttonElement) {
+            // Update active state của buttons
+            document.querySelectorAll('.menu-category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+
+            // Render giỏ hàng
+            renderCart();
+        }
+
+        // Hàm render giỏ hàng
+        function renderCart() {
+            const container = document.getElementById('menuItemsContainer');
+            
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="bi bi-cart-x"></i>
+                        <h5 class="mt-3 text-muted">Giỏ hàng trống</h5>
+                        <p class="text-muted">Vui lòng chọn món từ thực đơn</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartHtml = `
+                <div class="cart-view">
+                    <h4 class="mb-4">
+                        <i class="bi bi-cart-check me-2 text-success"></i>Giỏ Hàng Của Bạn
+                    </h4>
+                    <div id="cartItemsList">
+            `;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                cartHtml += `
+                    <div class="cart-item">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
+                                <h6 class="cart-item-name mb-1">${item.name}</h6>
+                                <div class="cart-item-price">${item.price.toLocaleString('vi-VN')} đ</div>
+                            </div>
+                            <button class="btn btn-sm btn-link text-danger remove-item-btn" onclick="removeFromCart(${index})" title="Xóa">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" class="quantity-input" value="${item.quantity}" 
+                                   min="1" onchange="updateQuantityInput(${index}, this.value)">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                            <span class="ms-auto fw-bold text-primary">
+                                = ${itemTotal.toLocaleString('vi-VN')} đ
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartHtml += `
+                    </div>
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Tổng tiền:</h5>
+                            <h4 class="mb-0 text-primary fw-bold">${total.toLocaleString('vi-VN')} đ</h4>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = cartHtml;
+        }
+
+        // Hàm xóa món khỏi giỏ hàng
+        function removeFromCart(index) {
+            if (confirm('Bạn có chắc muốn xóa món này khỏi giỏ hàng?')) {
+                cart.splice(index, 1);
+                renderCart();
+                updateTotalAmount();
+            }
+        }
+
+        // Hàm cập nhật số lượng
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity < 1) {
+                cart[index].quantity = 1;
+            }
+            renderCart();
+            updateTotalAmount();
+        }
+
+        // Hàm cập nhật số lượng từ input
+        function updateQuantityInput(index, value) {
+            const quantity = parseInt(value) || 1;
+            if (quantity < 1) {
+                cart[index].quantity = 1;
+            } else {
+                cart[index].quantity = quantity;
+            }
+            renderCart();
+            updateTotalAmount();
+        }
+
+        // Hàm thêm món vào giỏ hàng từ button
+        function addToCartFromButton(button) {
+            const itemIdStr = button.getAttribute('data-item-id');
+            const itemName = button.getAttribute('data-item-name');
+            const itemPriceStr = button.getAttribute('data-item-price');
+            
+            const itemId = parseInt(itemIdStr);
+            const itemPrice = parseFloat(itemPriceStr);
+            
+            if (isNaN(itemId) || itemId <= 0) {
+                alert('Lỗi: Không thể thêm món này vào giỏ hàng. Vui lòng thử lại.');
+                return;
+            }
+            
+            if (!itemName || itemName.trim() === '') {
+                alert('Lỗi: Tên món không hợp lệ.');
+                return;
+            }
+            
+            if (isNaN(itemPrice) || itemPrice <= 0) {
+                alert('Lỗi: Giá món không hợp lệ.');
+                return;
+            }
+            
+            addToCart(itemId, itemName, itemPrice);
+        }
+
+        // Hàm thêm món vào giỏ hàng
+        function addToCart(itemId, itemName, itemPrice) {
+            // Validate và convert dữ liệu
+            const id = parseInt(itemId);
+            const price = parseFloat(itemPrice);
+            
+            // Validate dữ liệu
+            if (isNaN(id) || id <= 0) {
+                alert('Lỗi: ID món không hợp lệ.');
+                return;
+            }
+            
+            if (!itemName || itemName.trim() === '') {
+                alert('Lỗi: Tên món không hợp lệ.');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                alert('Lỗi: Giá món không hợp lệ.');
+                return;
+            }
+            
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    name: itemName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            updateTotalAmount();
+            showCartNotification();
+        }
+
+        // Hàm cập nhật tổng tiền
+        function updateTotalAmount() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('totalAmount').textContent = total.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // Hàm hiển thị thông báo thêm vào giỏ hàng
+        function showCartNotification() {
+            // Có thể thêm toast notification ở đây
+        }
+
+        // Hàm xác nhận đặt món
+        async function confirmOrder() {
+            if (cart.length === 0) {
+                alert('Vui lòng chọn ít nhất một món!');
+                return;
+            }
+
+            if (!selectedTableId) {
+                alert('Vui lòng chọn bàn trước!');
+                return;
+            }
+
+            // Gửi đơn hàng lên server
+            await submitOrder();
+        }
+
+        // Hàm gửi đơn hàng lên server
+        async function submitOrder() {
+            try {
+                // Lấy AntiForgeryToken từ form bookingForm
+                const bookingForm = document.getElementById('bookingForm');
+                const token = bookingForm ? bookingForm.querySelector('input[name="__RequestVerificationToken"]')?.value : null;
+                
+                if (!token) {
+                    alert('Lỗi bảo mật. Vui lòng tải lại trang.');
+                    return;
+                }
+
+                // Chuẩn bị dữ liệu
+                const orderItems = cart.map(item => ({
+                    MenuItemId: item.id,
+                    Quantity: item.quantity
+                }));
+
+                // Gửi request với FormData để có AntiForgeryToken
+                const formData = new FormData();
+                formData.append('__RequestVerificationToken', token);
+                formData.append('tableId', selectedTableId);
+                formData.append('items', JSON.stringify(orderItems));
+
+                // Gửi request
+                const response = await fetch('@Url.Action("CreateOrder", "Booking")', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Lỗi khi gửi đơn hàng');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Hiển thị thông báo thành công
+                    showOrderSuccessModal();
+                } else {
+                    alert(result.message || 'Có lỗi xảy ra khi đặt món. Vui lòng thử lại.');
+                }
+            } catch (error) {
+                console.error('Error submitting order:', error);
+                alert('Có lỗi xảy ra khi đặt món. Vui lòng thử lại.');
+            }
+        }
+
+        // Hàm hiển thị modal thông báo đặt món thành công
+        function showOrderSuccessModal() {
+            // Set tên bàn
+            document.getElementById('orderTableName').textContent = selectedTableName;
+            
+            // Tính tổng tiền
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('orderTotalAmount').textContent = total.toLocaleString('vi-VN') + ' đ';
+            
+            // Hiển thị tóm tắt đơn hàng
+            let summaryHtml = '';
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                summaryHtml += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span class="text-primary fw-semibold">${itemTotal.toLocaleString('vi-VN')} đ</span>
+                    </div>
+                `;
+            });
+            document.getElementById('orderSummary').innerHTML = summaryHtml;
+            
+            // Đóng modal thực đơn
+            const menuModal = bootstrap.Modal.getInstance(document.getElementById('menuModal'));
+            if (menuModal) {
+                menuModal.hide();
+            }
+            
+            // Hiển thị modal thông báo thành công
+            const orderSuccessModal = new bootstrap.Modal(document.getElementById('orderSuccessModal'));
+            orderSuccessModal.show();
+        }
+
+        // Hàm đóng modal thông báo và reset giỏ hàng
+        function closeOrderSuccessModal() {
+            const orderSuccessModal = bootstrap.Modal.getInstance(document.getElementById('orderSuccessModal'));
+            if (orderSuccessModal) {
+                orderSuccessModal.hide();
+            }
+            
+            // Reset giỏ hàng sau khi đặt món thành công
+            cart = [];
+            updateTotalAmount();
+            
+            // Reload trang để cập nhật trạng thái bàn
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
         function selectTable(tableId, tableName, isAvailable) {
             if (!isAvailable) {
                 alert('Bàn này không thể đặt được. Vui lòng chọn bàn khác (màu xanh).');

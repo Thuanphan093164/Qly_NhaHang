@@ -1,0 +1,29 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<div class="admin-menu-sidebar">
+    <div class="sidebar-header">
+        <h3 class="sidebar-title">Quản Lý Thực Đơn</h3>
+    </div>
+    <nav class="sidebar-nav">
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item" data-action="loadList" data-type="mon-an">
+                <a href="#" class="sidebar-menu-link">
+                    <i class="bi bi-egg-fried me-2"></i>MÓN ĂN
+                </a>
+            </li>
+            <li class="sidebar-menu-item" data-action="loadList" data-type="thuc-uong">
+                <a href="#" class="sidebar-menu-link">
+                    <i class="bi bi-cup-straw me-2"></i>THỨC UỐNG
+                </a>
+            </li>
+            <li class="sidebar-menu-item" data-action="loadList" data-type="ruou">
+                <a href="#" class="sidebar-menu-link">
+                    <i class="bi bi-wine me-2"></i>RƯỢU
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+

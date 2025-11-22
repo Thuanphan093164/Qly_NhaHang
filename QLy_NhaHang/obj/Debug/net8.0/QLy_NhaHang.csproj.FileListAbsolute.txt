@@ -137,3 +137,4 @@ E:\WEB\C#\QLy_NhaHang\QLy_NhaHang\obj\Debug\net8.0\QLy_NhaHang.pdb
 E:\WEB\C#\QLy_NhaHang\QLy_NhaHang\obj\Debug\net8.0\QLy_NhaHang.genruntimeconfig.cache
 E:\WEB\C#\QLy_NhaHang\QLy_NhaHang\obj\Debug\net8.0\ref\QLy_NhaHang.dll
 E:\WEB\C#\QLy_NhaHang\QLy_NhaHang\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+E:\WEB\C#\QLy_NhaHang\QLy_NhaHang\obj\Debug\net8.0\QLy_NhaHang.sourcelink.json

@@ -20,10 +20,28 @@
                             <i class="bi bi-house-fill me-1"></i>Trang Chủ
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Menu">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-menu-button-wide me-1"></i>Thực Đơn
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="MonAn">
+                                    <i class="bi bi-egg-fried me-2"></i>Món ăn
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="ThucUong">
+                                    <i class="bi bi-cup-straw me-2"></i>Thức uống
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="Ruou">
+                                    <i class="bi bi-wine me-2"></i>Rượu
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Booking" asp-action="Index">

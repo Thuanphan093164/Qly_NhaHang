@@ -268,6 +268,202 @@ namespace QLy_NhaHang.Controllers
                 CreatedAt = DateTime.Now
             };
         }
+
+        /// <summary>
+        /// AJAX: Lấy menu items theo category để hiển thị trong modal
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetMenuItemsByCategory(string category)
+        {
+            try
+            {
+                var categoryName = category?.ToLower() switch
+                {
+                    "mon-an" => "Món ăn",
+                    "thuc-uong" => "Thức uống",
+                    "ruou" => "Rượu",
+                    _ => null
+                };
+
+                var query = _context.MenuItems
+                    .Where(m => m.IsActive == true)
+                    .Include(m => m.Category)
+                    .AsQueryable();
+
+                if (!string.IsNullOrEmpty(categoryName))
+                {
+                    query = query.Where(m => m.Category != null && m.Category.Name == categoryName);
+                }
+
+                var menuItems = await query
+                    .OrderBy(m => m.Category != null ? m.Category.Name : "")
+                    .ThenBy(m => m.Name)
+                    .ToListAsync();
+
+                var menuItemViewModels = menuItems.Select(item => new MenuItemViewModel
+                {
+                    Id = item.Id,
+                    Ten = item.Name,
+                    MoTa = item.Description,
+                    Gia = item.Price,
+                    Anh = item.ImageUrl,
+                    DonVi = item.Unit,
+                    TenDanhMuc = item.Category?.Name
+                }).ToList();
+
+                ViewBag.CategoryName = categoryName ?? "Tất cả";
+                return PartialView("_MenuItemsModal", menuItemViewModels);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tải menu items theo category");
+                ViewBag.CategoryName = "Tất cả";
+                return PartialView("_MenuItemsModal", new List<MenuItemViewModel>());
+            }
+        }
+
+        /// <summary>
+        /// Xử lý đặt món từ khách hàng tại bàn
+        /// </summary>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOrder(int tableId, string items)
+        {
+            try
+            {
+                // Kiểm tra dữ liệu đầu vào
+                if (tableId <= 0 || string.IsNullOrEmpty(items))
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ!" });
+                }
+
+                // Parse items từ JSON string
+                List<OrderItemRequest>? orderItems = null;
+                try
+                {
+                    var options = new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true // Cho phép camelCase và PascalCase
+                    };
+                    orderItems = System.Text.Json.JsonSerializer.Deserialize<List<OrderItemRequest>>(items, options);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Lỗi khi parse JSON items: {Items}", items);
+                    return Json(new { success = false, message = "Dữ liệu món không hợp lệ!" });
+                }
+                
+                if (orderItems == null || !orderItems.Any())
+                {
+                    return Json(new { success = false, message = "Danh sách món không hợp lệ!" });
+                }
+
+                // Validate từng item
+                foreach (var item in orderItems)
+                {
+                    if (item.MenuItemId <= 0)
+                    {
+                        _logger.LogWarning("MenuItemId không hợp lệ: {MenuItemId}", item.MenuItemId);
+                        return Json(new { success = false, message = $"ID món không hợp lệ: {item.MenuItemId}" });
+                    }
+                    if (item.Quantity <= 0)
+                    {
+                        return Json(new { success = false, message = $"Số lượng món không hợp lệ: {item.Quantity}" });
+                    }
+                }
+
+                // Kiểm tra bàn có tồn tại không
+                var table = await _context.Tables.FindAsync(tableId);
+                if (table == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy bàn này!" });
+                }
+
+                // Tính tổng tiền và validate menu items
+                decimal totalAmount = 0;
+                foreach (var item in orderItems)
+                {
+                    var menuItem = await _context.MenuItems.FindAsync(item.MenuItemId);
+                    if (menuItem == null)
+                    {
+                        _logger.LogWarning("Không tìm thấy món với ID: {MenuItemId}", item.MenuItemId);
+                        return Json(new { success = false, message = $"Không tìm thấy món với ID: {item.MenuItemId}" });
+                    }
+                    totalAmount += menuItem.Price * item.Quantity;
+                }
+
+                // Tạo đơn hàng
+                var order = new Order
+                {
+                    TableId = tableId,
+                    OrderDate = DateTime.Now,
+                    TotalAmount = totalAmount,
+                    Status = OrderStatus.New
+                };
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync(); // Lưu để lấy OrderId
+
+                // Tạo chi tiết đơn hàng
+                foreach (var item in orderItems)
+                {
+                    var menuItem = await _context.MenuItems.FindAsync(item.MenuItemId);
+                    if (menuItem != null)
+                    {
+                        var orderDetail = new OrderDetail
+                        {
+                            OrderId = order.Id,
+                            MenuItemId = item.MenuItemId,
+                            Quantity = item.Quantity,
+                            Price = menuItem.Price
+                        };
+                        _context.OrderDetails.Add(orderDetail);
+                    }
+                }
+
+                // Cập nhật trạng thái bàn
+                // Nếu bàn đang là Free hoặc Reserved, chuyển sang Occupied
+                // Nếu bàn đã là Occupied, giữ nguyên
+                var oldStatus = table.CurrentStatus;
+                if (table.CurrentStatus == TableStatus.Free || table.CurrentStatus == TableStatus.Reserved)
+                {
+                    table.CurrentStatus = TableStatus.Occupied;
+                    _context.Tables.Update(table);
+                    _logger.LogInformation("Đã cập nhật trạng thái bàn {TableName} từ {OldStatus} sang Occupied", 
+                        table.Name, oldStatus);
+                }
+                else
+                {
+                    _logger.LogInformation("Bàn {TableName} đã có khách, giữ nguyên trạng thái Occupied", table.Name);
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Đã tạo đơn hàng {OrderId} cho bàn {TableName} với tổng tiền {TotalAmount}", 
+                    order.Id, table.Name, totalAmount);
+
+                return Json(new { 
+                    success = true, 
+                    message = "Đặt món thành công!",
+                    orderId = order.Id,
+                    totalAmount = totalAmount
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tạo đơn hàng");
+                return Json(new { success = false, message = "Có lỗi xảy ra khi đặt món. Vui lòng thử lại." });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Request model cho món trong đơn hàng
+    /// </summary>
+    public class OrderItemRequest
+    {
+        public int MenuItemId { get; set; }
+        public int Quantity { get; set; }
     }
 }
 

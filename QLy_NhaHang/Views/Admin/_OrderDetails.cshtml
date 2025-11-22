@@ -1,0 +1,139 @@
+@model QLy_NhaHang.ViewModels.OrderDetailsViewModel
+@{
+    var tableId = Model?.TableId ?? 0;
+    var tableName = Model?.TableName ?? "Không xác định";
+    var orders = Model?.Orders ?? new List<QLy_NhaHang.ViewModels.OrderInfo>();
+}
+
+<div class="order-details-container">
+    <h4 class="mb-4">
+        <i class="bi bi-table me-2"></i>Bàn @tableName
+    </h4>
+
+    @if (orders != null && orders.Any())
+    {
+        @foreach (var order in orders)
+        {
+            <div class="order-item">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="mb-1">Đơn hàng #@order.OrderId</h6>
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        @{
+                            var statusText = order.Status switch
+                            {
+                                0 => "Mới",
+                                1 => "Đang xử lý",
+                                2 => "Đã phục vụ",
+                                3 => "Đã thanh toán",
+                                _ => "Không xác định"
+                            };
+                            var statusClass = order.Status switch
+                            {
+                                0 => "status-new",
+                                1 => "status-processing",
+                                2 => "status-served",
+                                _ => "status-new"
+                            };
+                        }
+                        <span class="status-badge @statusClass">
+                            @statusText
+                        </span>
+                        <div class="mt-2">
+                            <strong class="text-primary">@order.TotalAmount.ToString("N0") đ</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-items-list">
+                    <h6 class="mb-3">
+                        <i class="bi bi-list-check me-2"></i>Danh sách món:
+                    </h6>
+                    @if (order.OrderDetails != null && order.OrderDetails.Any())
+                    {
+                        @foreach (var detail in order.OrderDetails)
+                        {
+                            <div class="menu-item-row @(detail.IsCompleted ? "completed" : "")" data-order-detail-id="@detail.OrderDetailId">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        @if (detail.IsCompleted)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        }
+                                        <strong>@detail.MenuItemName</strong>
+                                        <span class="text-muted ms-2">x @detail.Quantity</span>
+                                    </div>
+                                    <div class="text-muted small mt-1">@detail.Price.ToString("N0") đ</div>
+                                </div>
+                                <div class="text-end d-flex align-items-center gap-2">
+                                    <div>
+                                        <div class="fw-bold">@detail.SubTotal.ToString("N0") đ</div>
+                                    </div>
+                                    @if (!detail.IsCompleted)
+                                    {
+                                        <button class="btn btn-warning btn-sm" onclick="window.markOrderDetailComplete(@detail.OrderDetailId, true, this)">
+                                            <i class="bi bi-check-circle me-1"></i>Xác nhận hoàn thành
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Đã hoàn thành
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                @{
+                    var allDetailsCompleted = order.OrderDetails != null && order.OrderDetails.Any() && 
+                                               order.OrderDetails.All(d => d.IsCompleted);
+                    var completedCount = order.OrderDetails?.Count(d => d.IsCompleted) ?? 0;
+                    var totalCount = order.OrderDetails?.Count ?? 0;
+                }
+                
+                <div class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">
+                                Đã hoàn thành: <span id="completedCount_@order.OrderId" class="fw-bold">@completedCount</span>/<span id="totalCount_@order.OrderId">@totalCount</span> món
+                            </small>
+                        </div>
+                        <button class="btn btn-success btn-sm" 
+                                id="completeOrderBtn_@order.OrderId"
+                                onclick="window.completeOrder(@order.OrderId)"
+                                @(allDetailsCompleted && totalCount > 0 ? "" : "disabled")>
+                            <i class="bi bi-check-circle me-1"></i>Hoàn thành đơn
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3">Bàn này chưa có đơn hàng</p>
+        </div>
+    }
+</div>
+
+<style>
+    .menu-item-row.completed {
+        opacity: 0.7;
+        background-color: #d4edda;
+    }
+    
+    .menu-item-row.completed strong {
+        text-decoration: line-through;
+    }
+</style>
+
+

@@ -73,6 +73,91 @@ header {
 }
 
 /* ============================================
+   Dropdown Menu Styles
+   ============================================ */
+
+.nav-item.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.75rem 0 0.5rem 0; /* Thêm padding-top để tạo vùng đệm */
+  margin-top: 0; /* Loại bỏ khoảng trống để dễ di chuyển chuột */
+  min-width: 180px;
+  top: 100% !important; /* Đảm bảo dropdown sát với menu item */
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.25rem;
+  color: #333;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+  padding-left: 1.5rem;
+}
+
+.dropdown-item i {
+  font-size: 1.1rem;
+  width: 20px;
+}
+
+/* Hiển thị dropdown khi hover trên desktop */
+@media (min-width: 992px) {
+  /* Hiển thị dropdown khi hover vào nav-item */
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block !important;
+    opacity: 1;
+    animation: fadeInDown 0.2s ease forwards;
+  }
+  
+  /* Giữ dropdown hiển thị khi hover vào chính dropdown menu */
+  .nav-item.dropdown .dropdown-menu:hover {
+    display: block !important;
+    opacity: 1;
+  }
+  
+  .nav-item.dropdown .dropdown-toggle::after {
+    transition: transform 0.3s ease;
+  }
+  
+  .nav-item.dropdown:hover .dropdown-toggle::after {
+    transform: rotate(180deg);
+  }
+  
+  /* Tạo vùng đệm vô hình ở đầu dropdown để dễ di chuyển chuột */
+  .nav-item.dropdown .dropdown-menu::before {
+    content: '';
+    display: block;
+    height: 10px;
+    margin-top: -10px; /* Kéo lên trên để che khoảng trống */
+    position: relative;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
    Main Content
    ============================================ */
 

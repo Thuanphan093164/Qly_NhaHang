@@ -1,0 +1,106 @@
+@model QLy_NhaHang.ViewModels.MenuViewModel
+@{
+    ViewData["Title"] = "Món ăn - Rose Thảo Điền";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/menu.css" asp-append-version="true" />
+}
+
+<div class="menu-page-container">
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-xl-2">
+                @await Html.PartialAsync("_MenuSidebar")
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9 col-xl-10">
+                <div class="menu-content-section py-5 px-4">
+                    <!-- Header Section -->
+                    <div class="mb-5">
+                        <h2 class="menu-content-title fw-bold mb-3">
+                            <i class="bi bi-egg-fried me-2 text-warning"></i>Thực đơn Món Ăn
+                        </h2>
+                    </div>
+
+                    <!-- Menu Items Grid -->
+                    @if (Model.MenuItems != null && Model.MenuItems.Any())
+                    {
+                        <div class="row g-4">
+                            @foreach (var item in Model.MenuItems)
+                            {
+                                <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                                    <div class="card menu-item-card h-100 shadow-sm border-0 overflow-hidden">
+                                        <!-- Ảnh món ăn -->
+                                        <div class="menu-item-image-container position-relative">
+                                            @if (!string.IsNullOrEmpty(item.Anh))
+                                            {
+                                                <img src="@item.Anh" 
+                                                     class="menu-item-image card-img-top" 
+                                                     alt="@item.Ten" 
+                                                     loading="lazy" />
+                                            }
+                                            else
+                                            {
+                                                <div class="menu-item-placeholder">
+                                                    <i class="bi bi-image"></i>
+                                                </div>
+                                            }
+                                            
+                                            <!-- Badge danh mục -->
+                                            @if (!string.IsNullOrEmpty(item.TenDanhMuc))
+                                            {
+                                                <span class="badge bg-warning text-dark menu-item-category-badge">
+                                                    @item.TenDanhMuc
+                                                </span>
+                                            }
+                                        </div>
+
+                                        <!-- Nội dung card -->
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title fw-bold mb-2">@item.Ten</h5>
+                                            
+                                            @if (!string.IsNullOrEmpty(item.MoTa))
+                                            {
+                                                <p class="card-text text-muted small mb-3 flex-grow-1" 
+                                                   style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                    @item.MoTa
+                                                </p>
+                                            }
+
+                                            <div class="mt-auto">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="h5 menu-item-price mb-0">
+                                                        @item.Gia.ToString("N0") đ
+                                                    </span>
+                                                    <span class="text-muted small">@item.DonVi</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Empty State -->
+                        <div class="row">
+                            <div class="col-12 text-center py-5">
+                                <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                                <h4 class="text-muted mb-3">Chưa có món ăn nào</h4>
+                                <p class="text-muted">
+                                    Danh mục "Món ăn" hiện chưa có món ăn. Vui lòng quay lại sau.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

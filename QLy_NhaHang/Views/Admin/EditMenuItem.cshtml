@@ -1,0 +1,150 @@
+@model QLy_NhaHang.Models.MenuItem
+@{
+    ViewData["Title"] = "Chỉnh Sửa Món Ăn";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+}
+
+<div class="container-fluid py-4">
+    @await Html.PartialAsync("_AdminBreadcrumb")
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil me-2"></i>Chỉnh Sửa Món Ăn
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="EditMenuItem" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <!-- Cột trái -->
+                            <div class="col-md-6">
+                                <!-- Tên món ăn -->
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label fw-semibold">
+                                        <i class="bi bi-tag me-2 text-primary"></i>Tên Món Ăn <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="Name" class="form-control" placeholder="Ví dụ: Phở Bò, Cà Phê Sữa Đá..." />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <!-- Danh mục -->
+                                <div class="mb-3">
+                                    <label asp-for="CategoryId" class="form-label fw-semibold">
+                                        <i class="bi bi-folder me-2 text-primary"></i>Danh Mục <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-select">
+                                        <option value="">-- Chọn danh mục --</option>
+                                    </select>
+                                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                    <small class="form-text text-muted">Chọn: Món ăn, Thức uống, hoặc Rượu</small>
+                                </div>
+
+                                <!-- Giá -->
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label fw-semibold">
+                                        <i class="bi bi-currency-dollar me-2 text-primary"></i>Giá (VNĐ) <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input asp-for="Price" class="form-control" type="number" step="1000" min="0" placeholder="Ví dụ: 50000" />
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+
+                                <!-- Đơn vị -->
+                                <div class="mb-3">
+                                    <label asp-for="Unit" class="form-label fw-semibold">
+                                        <i class="bi bi-rulers me-2 text-primary"></i>Đơn Vị
+                                    </label>
+                                    <input asp-for="Unit" class="form-control" placeholder="Ví dụ: phần, ly, chai..." />
+                                    <span asp-validation-for="Unit" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Cột phải -->
+                            <div class="col-md-6">
+                                <!-- Ảnh (URL) -->
+                                <div class="mb-3">
+                                    <label asp-for="ImageUrl" class="form-label fw-semibold">
+                                        <i class="bi bi-image me-2 text-primary"></i>Ảnh Món Ăn (URL)
+                                    </label>
+                                    <input asp-for="ImageUrl" class="form-control" type="url" placeholder="https://example.com/image.jpg" />
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    <small class="form-text text-muted">Nhập URL ảnh hoặc đường dẫn ảnh</small>
+                                    
+                                    <!-- Preview ảnh -->
+                                    <div id="imagePreview" class="mt-2" style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "display: none;" : "")">
+                                        <img id="previewImg" src="@(Model.ImageUrl ?? "")" alt="Preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+                                    </div>
+                                </div>
+
+                                <!-- Mô tả -->
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label fw-semibold">
+                                        <i class="bi bi-card-text me-2 text-primary"></i>Mô Tả
+                                    </label>
+                                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả về món ăn, thành phần, hương vị..."></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                    <small class="form-text text-muted">Tối đa 500 ký tự</small>
+                                </div>
+
+                                <!-- Trạng thái -->
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                        <label asp-for="IsActive" class="form-check-label">
+                                            <i class="bi bi-check-circle me-1"></i>Đang hoạt động
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted">Món ăn sẽ hiển thị trên menu khi bật</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Cập Nhật
+                            </button>
+                            <a asp-action="MenuItems" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Quay Lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Preview ảnh khi nhập URL
+        document.getElementById('ImageUrl')?.addEventListener('input', function(e) {
+            const url = e.target.value;
+            const previewDiv = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (url && url.startsWith('http')) {
+                previewImg.src = url;
+                previewDiv.style.display = 'block';
+                previewImg.onerror = function() {
+                    previewDiv.style.display = 'none';
+                };
+            } else if (!url) {
+                previewDiv.style.display = 'none';
+            }
+        });
+    </script>
+}
+

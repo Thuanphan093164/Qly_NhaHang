@@ -10,8 +10,8 @@
 <!-- Hero Banner -->
 @await Html.PartialAsync("_HeroBanner")
 
-
-@await Html.PartialAsync("_BestSellerSection", Model.BestSellerItems)
+<!-- Best Seller Section - Hiển thị 8 ảnh (không hiển thị menu items) -->
+@await Html.PartialAsync("_BestSellerSection", new List<QLy_NhaHang.ViewModels.MenuItemViewModel>())
 
 <!-- Thông tin liên hệ -->
 @await Html.PartialAsync("_InfoSection")

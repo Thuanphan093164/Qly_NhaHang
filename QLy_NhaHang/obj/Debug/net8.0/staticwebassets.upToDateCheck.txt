@@ -1,6 +1,8 @@
+wwwroot\css\admin-menu.css
 wwwroot\css\admin.css
 wwwroot\css\booking.css
 wwwroot\css\home.css
+wwwroot\css\menu.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\images\banner1.jpg

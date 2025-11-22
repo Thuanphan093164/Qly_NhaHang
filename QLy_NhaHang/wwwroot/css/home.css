@@ -87,11 +87,13 @@
     padding: 3rem 0;
 }
 
-.best-seller-section .section-title {
+.best-seller-section .section-title,
+.menu-section .section-title {
     margin-bottom: 3rem;
 }
 
-.best-seller-section .section-divider {
+.best-seller-section .section-divider,
+.menu-section .section-divider {
     width: 25%;
     margin: 0 auto;
     border-top: 3px solid #ffc107;

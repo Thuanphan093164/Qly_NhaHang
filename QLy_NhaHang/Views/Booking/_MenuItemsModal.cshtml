@@ -1,0 +1,82 @@
+@model List<QLy_NhaHang.ViewModels.MenuItemViewModel>
+@{
+    var categoryName = ViewBag.CategoryName as string ?? "Tất cả";
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row g-3">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card menu-item-card h-100 border-0 shadow-sm">
+                    @if (!string.IsNullOrEmpty(item.Anh))
+                    {
+                        <img src="@item.Anh" class="card-img-top menu-item-image" alt="@item.Ten" 
+                             onerror="this.src='/images/placeholder.jpg'">
+                    }
+                    else
+                    {
+                        <div class="card-img-top menu-item-image-placeholder d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-2">@item.Ten</h5>
+                        @if (!string.IsNullOrEmpty(item.MoTa))
+                        {
+                            <p class="card-text text-muted small mb-2">@item.MoTa</p>
+                        }
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-primary fw-bold fs-5">
+                                @item.Gia.ToString("N0") đ
+                                @if (!string.IsNullOrEmpty(item.DonVi))
+                                {
+                                    <small class="text-muted">/@item.DonVi</small>
+                                }
+                            </span>
+                            <button class="btn btn-primary btn-sm" 
+                                    data-item-id="@item.Id" 
+                                    data-item-name="@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(item.Ten))" 
+                                    data-item-price="@item.Gia.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                                    onclick="addToCartFromButton(this)">
+                                <i class="bi bi-cart-plus me-1"></i>Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+        <p class="text-muted mt-3">Chưa có món nào trong danh mục "@categoryName"</p>
+    </div>
+}
+
+<style>
+    .menu-item-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 0.75rem;
+    }
+
+    .menu-item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .menu-item-image {
+        height: 200px;
+        object-fit: cover;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+
+    .menu-item-image-placeholder {
+        height: 200px;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+</style>
+
